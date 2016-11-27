@@ -83,11 +83,11 @@ function! UltiSnips#ListSnippets()
 endfunction
 
 function! UltiSnips#SnippetsInCurrentScope(...)
-    let b:current_ulti_dict = {}
+    let g:current_ulti_dict = {}
     let all = get(a:, 1, 0)
     let g:current_ulti_dict_info = {}
     exec g:_uspy "UltiSnips_Manager.snippets_in_current_scope(" . all . ")"
-    return b:current_ulti_dict
+    return g:current_ulti_dict
 endfunction
 
 function! UltiSnips#SaveLastVisualSelection() range
