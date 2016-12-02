@@ -3,12 +3,7 @@ if exists('did_plugin_ultisnips') || &cp
 endif
 let did_plugin_ultisnips=1
 
-if version < 704
-   echohl WarningMsg
-   echom  "UltiSnips requires Vim >= 7.4"
-   echohl None
-   finish
-endif
+if version < 704 | finish | endif
 
 if !exists("g:UltiSnipsUsePythonVersion")
    let g:_uspy=":py3 "
