@@ -41,11 +41,13 @@ command! -bang -nargs=? -complete=customlist,UltiSnips#FileTypeComplete UltiSnip
 
 command! -nargs=1 UltiSnipsAddFiletypes :call UltiSnips#AddFiletypes(<q-args>)
 
-augroup UltiSnips_AutoTrigger
-    au!
-    au InsertCharPre * call UltiSnips#TrackChange()
-    au TextChangedI * call UltiSnips#TrackChange()
-augroup END
+if get(g:, 'ultisnips_auto_trigger', 0)
+    augroup UltiSnips_AutoTrigger
+        au!
+        au InsertCharPre * call UltiSnips#TrackChange()
+        au TextChangedI * call UltiSnips#TrackChange()
+    augroup END
+end
 
 call UltiSnips#map_keys#MapKeys()
 

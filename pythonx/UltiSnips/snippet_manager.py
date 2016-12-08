@@ -151,7 +151,8 @@ class SnippetManager(object):
         snippets = self._snips(before, True)
 
         # Sort snippets alphabetically
-        snippets.sort(key=lambda x: x.trigger)
+        if not searchAll:
+            snippets.sort(key=lambda x: x.trigger)
         for snip in snippets:
             description = snip.description[snip.description.find(snip.trigger) +
                                            len(snip.trigger) + 2:]
@@ -168,19 +169,14 @@ class SnippetManager(object):
                     description = description[1:-1]
 
             _vim.command(as_unicode(
-                "let g:current_ulti_dict['{key}'] = '{val}'").format(
-                    key=key.replace("'", "''"),
-                    val=description.replace("'", "''")))
-
-            if searchAll:
-                _vim.command(as_unicode(
-                    ("let g:current_ulti_dict_info['{key}'] = {{"
-                     "'description': '{description}',"
-                     "'location': '{location}',"
-                     "}}")).format(
-                        key=key.replace("'", "''"),
-                        location=location.replace("'", "''"),
-                        description=description.replace("'", "''")))
+                "call add(g:current_ulti_list, {{"
+                    "'key': '{trigger}',"
+                    "'description': '{description}',"
+                    "'location': '{location}',"
+                    "}})").format(
+                    trigger=key.replace("'", "''"),
+                    description=description.replace("'", "''"),
+                    location=location.replace("'", "''")))
 
 
 
@@ -568,7 +564,7 @@ class SnippetManager(object):
 
         """
         filetypes = self.get_buffer_filetypes()[::-1]
-        matching_snippets = defaultdict(list)
+        matching_snippets = []
         clear_priority = None
         cleared = {}
         for _, source in self._snippet_sources:
@@ -597,26 +593,22 @@ class SnippetManager(object):
                 if ((clear_priority is None or snippet.priority > clear_priority)
                         and (snippet.trigger not in cleared or
                              snippet.priority > cleared[snippet.trigger])):
-                    matching_snippets[snippet.trigger].append(snippet)
-        if not matching_snippets:
+                    matching_snippets.append(snippet)
+        if len(matching_snippets) is 0:
             return []
+
+        if before == '' or partial:
+            return matching_snippets
 
         # Now filter duplicates and only keep the one with the highest
         # priority.
         snippets = []
-        for snippets_with_trigger in matching_snippets.values():
-            highest_priority = max(s.priority for s in snippets_with_trigger)
-            snippets.extend(s for s in snippets_with_trigger
-                            if s.priority == highest_priority)
+        highest_priority = max(s.priority for s in matching_snippets)
+        for s in matching_snippets:
+            if s.priority == highest_priority:
+                snippets.append(s)
 
-        # For partial matches we are done, but if we want to expand a snippet,
-        # we have to go over them again and only keep those with the maximum
-        # priority.
-        if partial:
-            return snippets
-
-        highest_priority = max(s.priority for s in snippets)
-        return [s for s in snippets if s.priority == highest_priority]
+        return snippets
 
     def _do_snippet(self, snippet, before):
         """Expands the given snippet, and handles everything that needs to be
