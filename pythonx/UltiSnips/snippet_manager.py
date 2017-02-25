@@ -161,6 +161,7 @@ class SnippetManager(object):
 
             key = as_unicode(snip.trigger)
             description = as_unicode(description)
+            priority = snip.priority
 
             # remove surrounding "" or '' in snippet description if it exists
             if len(description) > 2:
@@ -173,10 +174,13 @@ class SnippetManager(object):
                     "'key': '{trigger}',"
                     "'description': '{description}',"
                     "'location': '{location}',"
+                    "'filepath': '{filepath}',"
+                    "'priority': " + str(priority) + ","
                     "}})").format(
                     trigger=key.replace("'", "''"),
                     description=description.replace("'", "''"),
-                    location=location.replace("'", "''")))
+                    location=location.replace("'", "''"),
+                    filepath=location.split(':')[0]))
 
 
 

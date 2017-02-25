@@ -75,12 +75,6 @@ function! s:source.gather_candidates(args, context)
   return canditates
 endfunction
 
-function! s:Pad(str)
-  let emptystr = "                 "
-  let pad = substitute(emptystr, '\v\s{' . len(a:str) . '}', '', '')
-  return a:str . pad
-endfunction
-
 function! unite#sources#ultisnips#define()
   return s:source
 endfunction
