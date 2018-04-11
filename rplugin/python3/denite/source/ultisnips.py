@@ -76,7 +76,7 @@ class Kind(File):
         super().__init__(vim)
 
         self.default_action = 'expand'
-        self.name = 'todo'
+        self.name = 'ultisnips'
         self.sorters = []
 
     def action_expand(self, context):
